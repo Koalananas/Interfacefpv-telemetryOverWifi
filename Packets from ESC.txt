@@ -1,0 +1,48 @@
+CAN packets description
+• speed of the CAN bus 128,256,512 kbit or 1 Mbit - P27
+• protocol version of the CAN bus A/B - P35
+• packets are transmited each 250ms, four packet, 1s round trip time
+• „Pxx“ means parameter number xx, adjustable by controller 2 software on PC
+Packet no 1 – 7 bytes
+• adress if CAN A selected – directly the P15
+• adress if CAN B selected – 0x14A10000 + P15
+• battery voltage – (data[0] + 256*data[1])/57,45 = voltage (V)
+• battery current – (data[2] + 256*data[3])/10 = current (A)
+• motor rpm – (data[4] + 256*data[5] + 65536*data[6])*10 = revolutions (rpm)
+Packet no 2 – 7 bytes
+• adress if CAN A selected – P15 + 1
+• adress if CAN B selected – 0x14A10001 + P15
+• odometer (electrical rpms since last power on)
+
+- (data[0] + 256*data[1] + 65536*data[2] + 16777216*data[3]) = revolution counter
+
+• controller temperature – (data[4]) = temp (deg.C)
+• motor temperature – (data[5]) = temp (deg.C)
+• battery temperature – (data[6]) = temp (deg.C)
+Packet no 3 – 8 bytes
+• adress if CAN A selected – P15 + 2
+• adress if CAN B selected – 0x14A10002 + P15
+• requested output pwm – (data[0] + 256*data[1])/10 = pwm (%)
+• real output pwm – (data[2] + 256*data[3])/10 = pwm (%)
+• warnings (controller continues to work) – (data[4] + 256*data[5]) = bit pattern
+◦ 0x0001 – low voltage
+◦ 0x0002 – high current
+◦ 0x0004 – controller overheated
+◦ 0x0008 – battery overheated
+◦ 0x0010 – motor overheated
+• failures (controller shut down) – (data[6] + 256*data[7]) = bit pattern
+◦ 0x0001 – input signal out of range/not present
+◦ 0x0002 – waiting for throttle idle position
+◦ 0x0004 – power off request
+◦ 0x0008 – memory error
+◦ 0x0010 – power off request (settings change)
+◦ 0x0020 – motor error (HAL sensors)
+◦ 0x0040 – internal power source error
+◦ 0x0080 – power off request – HAL position learning procedure completed sucessfully
+◦ 0x0100 – battery temperature sensor
+◦ 0x0200 – motor temperature sensor
+◦ 0x8000 – other HW error
+Packet no 4 – 8 bytes
+• adress if CAN A selected – P15 + 3
+• adress if CAN B selected – 0x14A10003 + P15
+• remaining battery capacity – (data[0] + 256*data[1]) = capacity (%)
