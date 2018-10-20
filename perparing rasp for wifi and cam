@@ -1,0 +1,65 @@
+//----------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------video-------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+sudo apt-get install cmake libjpeg8-dev
+
+wget https://github.com/jacksonliam/mjpg-streamer/archive/master.zip
+
+unzip master.zip
+
+cd mjp*g-*
+cd mjp*g-*
+
+make
+sude make install
+cd
+
+/usr/local/bin/mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -f 10 -r 1280x720" \ -o "/usr/local/lib/mjpg-streamer/output_http.so -p 8085 -w /usr/local/share/mjpg-streamer/www"
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------Create service-------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+sudo nano /home/pi/Desktop/onStart1
+>
+#!/bin/bash
+/usr/local/bin/mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -f 20 -r 640x480" -o "/usr/local/lib/mjpg-streamer/output_http.so -p 8085 -w /usr/local/share/mjpg-streamer/www"
+<
+sudo chmod /home/pi/Desktop/onStart1 755
+
+sudo nano /etc/init.d/ffmpeg
+
+>
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: stream
+# Required-Start: $local_fs $network $named $time $syslog
+# Required-Stop: $local_fs $network $named $time $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Description: start ffmpeg
+### END INIT INFO
+
+cd /home/pi/Desktop
+./onStart1
+<
+
+sudo chmod /etc/init.d/ffmpeg 755
+
+sudo update-rc.d ffmpeg defaults
+
+sudo reboot
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------Network---------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------
+sudo apt update
+
+sudo apt install network-manager network-manager-gnome openvpn \openvpn-systemd-resolved network-manager-openvpn \network-manager-openvpn-gnome
+
+sudo apt purge openresolv dhcpcd5
+
+sudo ln -sf /lib/systemd/resolv.conf /etc/resolv.conf
+
+new co wifi 2.4ghz 10.0.0.2 255.255.255.0 10.0.0.1
